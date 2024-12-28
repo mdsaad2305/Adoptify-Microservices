@@ -3,6 +3,7 @@ package com.microservices.adoptify.user_service.controller;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,40 +21,39 @@ public class UserController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
-    @ResponseStatus(HttpStatus.OK)
-    public Optional<User> getUserById(@PathVariable Long userId) {
-        return userService.getUser(userId);
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+        Optional<User> user = userService.getUser(userId);
+        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public String addUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public ResponseEntity<String> addUser(@RequestBody User user) {
+        String response = userService.addUser(user);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PatchMapping("/{userId}")
-    @ResponseStatus(HttpStatus.OK)
-    public String updateUser(@PathVariable Long userId, @RequestBody User user) {
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody User user) {
         boolean userPresent = userService.updateUser(userId, user);
         if (userPresent) {
-            return "User updated successfully";
+            return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
 
     @DeleteMapping("/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public String deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         boolean userPresent = userService.deleteUser(userId);
         if (userPresent) {
-            return "User deleted successfully";
+            return new ResponseEntity<>("User deleted successfully", HttpStatus.NO_CONTENT);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
