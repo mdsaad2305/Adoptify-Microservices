@@ -1,5 +1,6 @@
 package com.microservices.adoptify.user_service.controller;
 
+import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -21,17 +22,36 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        Optional<User> user = userService.getUser(userId);
-        return user.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId) {
+        UserDTO userDTO = userService.getUser(userId);
+        if(userDTO == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
+        User newUser = userService.registerUser(user);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
+        boolean isAuthenticated = userService.Verify(user);
+        if(isAuthenticated) {
+            return new ResponseEntity<>("User Authenticated", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User Not Authenticated", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 
     @PostMapping
     public ResponseEntity<String> addUser(@RequestBody User user) {
@@ -40,8 +60,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody User user) {
-        boolean userPresent = userService.updateUser(userId, user);
+    public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
+        boolean userPresent = userService.updateUser(userId, userDTO);
         if (userPresent) {
             return new ResponseEntity<>("User updated successfully", HttpStatus.OK);
         } else {
