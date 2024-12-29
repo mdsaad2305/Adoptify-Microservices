@@ -1,5 +1,6 @@
 package com.microservices.adoptify.user_service.service.impl;
 
+import com.microservices.adoptify.user_service.configuration.JWTService;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.mapper.UserMapper;
 import com.microservices.adoptify.user_service.model.User;
@@ -23,7 +24,10 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    @Autowired
+    private JWTService jwtService;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     public UserServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
@@ -37,14 +41,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean Verify(User user) {
+    public String Verify(User user) {
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if (authentication.isAuthenticated()) {
-            return true;
+            return jwtService.generateToken(user.getUsername());
         } else {
-            return false;
+            return "Invalid username or password";
         }
     }
 

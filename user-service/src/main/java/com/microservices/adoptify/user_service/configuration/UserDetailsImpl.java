@@ -26,7 +26,6 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    // Factory method to build UserDetailsImpl from User entity
     public static UserDetailsImpl build(User user) {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRoles()));
         return new UserDetailsImpl(
@@ -38,7 +37,6 @@ public class UserDetailsImpl implements UserDetails {
         );
     }
 
-    // Getters for additional fields
     public Long getUserId() {
         return userId;
     }
@@ -47,7 +45,6 @@ public class UserDetailsImpl implements UserDetails {
         return email;
     }
 
-    // Overridden methods from UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -66,26 +63,25 @@ public class UserDetailsImpl implements UserDetails {
     // Implement other methods as needed
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Customize based on your requirements
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Customize based on your requirements
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Customize based on your requirements
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return "ACTIVE".equalsIgnoreCase(status()); // Link to user's status
+        return "ACTIVE".equalsIgnoreCase(status());
     }
 
     private String status() {
-        // Implement logic to retrieve user's status, possibly via User entity
-        return "ACTIVE"; // Placeholder
+        return "ACTIVE";
     }
 }

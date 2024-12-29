@@ -11,7 +11,7 @@ public interface UserService {
 
     public User registerUser(User user);
 
-    boolean Verify(User user);
+    String Verify(User user);
 
     public List<UserDTO> getAllUsers();
 

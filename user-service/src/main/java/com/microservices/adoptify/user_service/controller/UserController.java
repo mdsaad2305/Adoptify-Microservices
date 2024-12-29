@@ -44,12 +44,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody User user) {
-        boolean isAuthenticated = userService.Verify(user);
-        if(isAuthenticated) {
-            return new ResponseEntity<>("User Authenticated", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("User Not Authenticated", HttpStatus.UNAUTHORIZED);
-        }
+        return new ResponseEntity<>(userService.Verify(user), HttpStatus.OK);
     }
 
 
