@@ -14,6 +14,7 @@ public class User {
     private Long userId;
     private String username;
     private String email;
+    private String phoneNumber;
     private String password;
     private String roles;
     private LocalDateTime createdAt;
@@ -22,11 +23,12 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password, String roles) {
+    public User(String username, String email, String password, String roles, String phoneNumber) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.phoneNumber = phoneNumber;
     }
 
     public Long getUserId() {
@@ -51,6 +53,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPassword() {

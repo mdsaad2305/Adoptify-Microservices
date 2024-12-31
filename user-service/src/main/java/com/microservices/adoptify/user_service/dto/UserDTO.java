@@ -6,6 +6,7 @@ public class UserDTO {
     private Long userId;
     private String username;
     private String email;
+    private String phoneNumber;
     private String roles;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -13,10 +14,11 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(Long userId, String username, String email, String roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserDTO(Long userId, String username, String email, String phoneNumber, String roles, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.username = username;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.roles = roles;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -44,6 +46,14 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getRoles() {
