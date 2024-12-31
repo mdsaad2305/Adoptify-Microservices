@@ -35,3 +35,5 @@ build/
 ## Custom ##
 .env
 src/main/java/com/microservices/adoptify/user_service/controller/TestController.java
+src/main/java/com/microservices/adoptify/user_service/clients
+src/main/java/com/microservices/adoptify/user_service/external

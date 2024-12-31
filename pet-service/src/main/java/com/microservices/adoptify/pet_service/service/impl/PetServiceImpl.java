@@ -1,20 +1,30 @@
 package com.microservices.adoptify.pet_service.service.impl;
 
 
+import com.microservices.adoptify.pet_service.clients.UserClient;
+import com.microservices.adoptify.pet_service.dto.PetAndUserDTO;
+import com.microservices.adoptify.pet_service.external.User;
+import com.microservices.adoptify.pet_service.mapper.UserAndPetToDTO;
 import com.microservices.adoptify.pet_service.model.Pet;
 import com.microservices.adoptify.pet_service.repository.PetRepository;
 import com.microservices.adoptify.pet_service.service.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PetServiceImpl implements PetService {
 
-    @Autowired
-    private PetRepository petRepository;
+    private final PetRepository petRepository;
+    private final UserClient userClient;
+
+    public PetServiceImpl(PetRepository petRepository , UserClient userClient) {
+        this.petRepository = petRepository;
+        this.userClient = userClient;
+    }
 
     // Create or update a pet
     @Override
@@ -24,14 +34,32 @@ public class PetServiceImpl implements PetService {
 
     // Get all pets
     @Override
-    public List<Pet> getAllPets() {
-        return petRepository.findAll();
+    public List<PetAndUserDTO> getAllPets(String token) {
+        List<Pet> petList = petRepository.findAll();
+        return convertPetAndUserToDTO(petList, token);
+    }
+
+    private List<PetAndUserDTO> convertPetAndUserToDTO(List<Pet> pets, String token ) {
+        List<PetAndUserDTO> petAndUserDTOs = new ArrayList<>();
+        for(Pet pet : pets) {
+            User user = userClient.getUserById(pet.getUserId(), token);
+            PetAndUserDTO petAndUserDTO = UserAndPetToDTO.toDTO(pet, user);
+            petAndUserDTOs.add(petAndUserDTO);
+        }
+        return petAndUserDTOs;
     }
 
     // Get a pet by ID
     @Override
-    public Optional<Pet> getPetById(Long id) {
-        return petRepository.findById(id);
+    public PetAndUserDTO getPetById(Long id, String token) {
+        Pet pet = petRepository.findById(id).orElse(null);
+        return convertPetAndUserToDTO(pet, token);
+
+    }
+
+    private PetAndUserDTO convertPetAndUserToDTO(Pet pet, String token ) {
+            User user = userClient.getUserById(pet.getUserId(), token);
+            return UserAndPetToDTO.toDTO(pet, user);
     }
 
     // Delete a pet by ID
