@@ -1,110 +1,109 @@
 package com.microservices.adoptify.user_service.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_table")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
-    private String username;
-    private String email;
-    private String phoneNumber;
-    private String password;
-    private String roles;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "user_id")
+  private Long userId;
 
-    public User() {
-    }
+  private String username;
+  private String email;
+  private String phoneNumber;
+  private String password;
+  private String roles;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
-    public User(String username, String email, String password, String roles, String phoneNumber) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-        this.phoneNumber = phoneNumber;
-    }
+  public User() {}
 
-    public Long getUserId() {
-        return userId;
-    }
+  public User(String username, String email, String password, String roles, String phoneNumber) {
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.roles = roles;
+    this.phoneNumber = phoneNumber;
+  }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+  public Long getUserId() {
+    return userId;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  public String getUsername() {
+    return username;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+  public String getPhoneNumber() {
+    return phoneNumber;
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    public String getRoles() {
-        return roles;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
+  public String getRoles() {
+    return roles;
+  }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+  public void setRoles(String roles) {
+    this.roles = roles;
+  }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
 
-    // automatically set time for createdAt and updatedAt when new row is saved
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 
-    // automatically set time for updatedAt when the row is updated
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+  // automatically set time for createdAt and updatedAt when new row is saved
+  @PrePersist
+  protected void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  // automatically set time for updatedAt when the row is updated
+  @PreUpdate
+  protected void onUpdate() {
+    this.updatedAt = LocalDateTime.now();
+  }
 }
