@@ -48,11 +48,11 @@ public class UserController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody User user) {
-        String response = userService.addUser(user);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+//    @PostMapping
+//    public ResponseEntity<String> addUser(@RequestBody User user) {
+//        String response = userService.addUser(user);
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
 
     @PatchMapping("/{userId}")
     public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
