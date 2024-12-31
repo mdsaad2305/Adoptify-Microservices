@@ -21,17 +21,14 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
     private final AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JWTService jwtService;
-
+    private final JWTService jwtService;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public UserServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager) {
+    public UserServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JWTService jwtService) {
         this.userRepository = userRepository;
         this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -88,6 +85,9 @@ public class UserServiceImpl implements UserService {
             }
             if(updatedUser.getRoles() != null) {
                 user.setRoles(updatedUser.getRoles());
+            }
+            if(updatedUser.getPhoneNumber() != null) {
+                user.setPhoneNumber(updatedUser.getPhoneNumber());
             }
             return true;
         }
