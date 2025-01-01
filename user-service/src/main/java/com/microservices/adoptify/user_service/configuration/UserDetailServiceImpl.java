@@ -11,25 +11,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User Not Found with username: " + username)
-                );
-        return UserDetailsImpl.build(user);
-    }
+  @Override
+  @Transactional
+  public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
+    User user =
+        userRepository
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException("User Not Found with username: " + username));
+    return UserDetailsImpl.build(user);
+  }
 
-    // Optional: Load user by ID
-    public UserDetailsImpl loadUserById(Long userId) throws UsernameNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User Not Found with ID: " + userId)
-                );
-        return UserDetailsImpl.build(user);
-    }
+  // Optional: Load user by ID
+  public UserDetailsImpl loadUserById(Long userId) throws UsernameNotFoundException {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with ID: " + userId));
+    return UserDetailsImpl.build(user);
+  }
 }
