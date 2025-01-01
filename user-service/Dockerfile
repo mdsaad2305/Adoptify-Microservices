@@ -1,3 +1,19 @@
+# First stage: Build the application
+FROM maven:3.9.5-eclipse-temurin-21 AS builder
+
+# Create and set the working directory
+WORKDIR /app
+
+# Copy the pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy the entire source code
+COPY src ./src
+
+# Build the application (skip tests if desired)
+RUN mvn clean package -DskipTests
+
 # Use the official OpenJDK 21 runtime as a parent image
 FROM openjdk:21-slim
 

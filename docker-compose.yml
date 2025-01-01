@@ -1,0 +1,33 @@
+services:
+  service-registry:
+    build:
+      context: ./service-registry
+      dockerfile: Dockerfile
+    image: service-registry:latest
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    image: user-service:latest
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      # - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - service-registry
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
