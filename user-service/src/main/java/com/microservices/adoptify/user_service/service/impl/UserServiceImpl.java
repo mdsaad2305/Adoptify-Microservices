@@ -2,6 +2,7 @@ package com.microservices.adoptify.user_service.service.impl;
 
 import com.microservices.adoptify.user_service.configuration.JWTService;
 import com.microservices.adoptify.user_service.configuration.UserDetailsImpl;
+import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.mapper.UserMapper;
 import com.microservices.adoptify.user_service.model.User;
@@ -16,10 +17,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+  private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
   private final UserRepository userRepository;
   private final AuthenticationManager authenticationManager;
   private final JWTService jwtService;
@@ -35,32 +39,55 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User registerUser(User user) {
+  public UserAndJwtDTO registerUser(User user) {
+    // Check for duplicate username
+    if (userRepository.existsByUsername(user.getUsername())) {
+      logger.warn("Attempted to register with duplicate username: {}", user.getUsername());
+      throw new RuntimeException("Username already exists");
+    }
+
     user.setPassword(encoder.encode(user.getPassword()));
-    return userRepository.save(user);
+    logger.info("Password encoded for user: {}", user.getUsername());
+
+    User savedUser = userRepository.save(user);
+    logger.info("User registered successfully with userId: {}", savedUser.getUserId());
+
+    String token = jwtService.generateToken(savedUser.getUserId());
+    logger.debug("JWT token generated for userId {}: {}", savedUser.getUserId(), token);
+
+    UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
+    userAndJwtDTO.setUser(savedUser);
+    userAndJwtDTO.setToken(token);
+
+    return userAndJwtDTO;
   }
 
   @Override
-  public String Verify(User user) {
+  public UserAndJwtDTO verify(User user) {
     try {
-      Authentication authentication =
-              authenticationManager.authenticate(
-                      new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+      Authentication authentication = authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
       if (authentication.isAuthenticated()) {
-        // Extract UserDetailsImpl from the Authentication object
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         Long userId = userDetails.getUserId();
+        logger.info("User authenticated successfully with userId: {}", userId);
 
-        // Generate JWT token using userId
-        return jwtService.generateToken(userId);
+        String token = jwtService.generateToken(userId);
+        logger.debug("JWT token generated for userId {}: {}", userId, token);
+
+        UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
+        userAndJwtDTO.setUser(userRepository.findById(userId).orElse(null));
+        userAndJwtDTO.setToken(token);
+
+        return userAndJwtDTO;
       } else {
-        return "Invalid username or password";
+        logger.warn("Authentication failed for username: {}", user.getUsername());
+        throw new AuthenticationException("Invalid username or password") {};
       }
     } catch (AuthenticationException e) {
-      // Log the exception (optional)
-      // logger.error("Authentication failed for user: " + user.getUsername(), e);
-      return "Invalid username or password";
+      logger.error("AuthenticationException for user: {}", user.getUsername(), e);
+      throw new AuthenticationException("Invalid username or password") {};
     }
   }
 
