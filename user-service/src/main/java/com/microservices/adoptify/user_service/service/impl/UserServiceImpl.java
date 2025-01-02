@@ -1,6 +1,7 @@
 package com.microservices.adoptify.user_service.service.impl;
 
 import com.microservices.adoptify.user_service.configuration.JWTService;
+import com.microservices.adoptify.user_service.configuration.UserDetailsImpl;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.mapper.UserMapper;
 import com.microservices.adoptify.user_service.model.User;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,13 +42,24 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public String Verify(User user) {
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+    try {
+      Authentication authentication =
+              authenticationManager.authenticate(
+                      new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
-    if (authentication.isAuthenticated()) {
-      return jwtService.generateToken(user.getUsername());
-    } else {
+      if (authentication.isAuthenticated()) {
+        // Extract UserDetailsImpl from the Authentication object
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+
+        // Generate JWT token using userId
+        return jwtService.generateToken(userId);
+      } else {
+        return "Invalid username or password";
+      }
+    } catch (AuthenticationException e) {
+      // Log the exception (optional)
+      // logger.error("Authentication failed for user: " + user.getUsername(), e);
       return "Invalid username or password";
     }
   }

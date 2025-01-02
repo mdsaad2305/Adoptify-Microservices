@@ -28,30 +28,34 @@ public class JwtFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+          HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+          throws ServletException, IOException {
     String authHeader = request.getHeader("Authorization");
     String jwtToken = null;
-    String username = null;
+    Long userId = null;
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       jwtToken = authHeader.substring(7);
-      username = jwtService.extractUserName(jwtToken);
+      try {
+        userId = Long.valueOf(jwtService.extractUserId(jwtToken));
+      } catch (NumberFormatException e) {
+        logger.error("Invalid token subject. Unable to parse userId.", e);
+      }
     }
 
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+    if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
       UserDetailsImpl userDetails =
-          applicationContext.getBean(UserDetailServiceImpl.class).loadUserByUsername(username);
+              applicationContext.getBean(UserDetailServiceImpl.class).loadUserById(userId);
 
       if (jwtService.validateToken(jwtToken, userDetails)) {
         UsernamePasswordAuthenticationToken authToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
       }
     }
-    filterChain.doFilter(request, response); // go to the next filter
+    filterChain.doFilter(request, response); // proceed to the next filter
   }
 }
