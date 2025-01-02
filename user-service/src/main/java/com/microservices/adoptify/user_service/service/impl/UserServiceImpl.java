@@ -55,8 +55,9 @@ public class UserServiceImpl implements UserService {
     String token = jwtService.generateToken(savedUser.getUserId());
     logger.debug("JWT token generated for userId {}: {}", savedUser.getUserId(), token);
 
+    UserDTO userDTO = convertToUserDTO(savedUser);
     UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
-    userAndJwtDTO.setUser(savedUser);
+    userAndJwtDTO.setUser(userDTO);
     userAndJwtDTO.setToken(token);
 
     return userAndJwtDTO;
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
         logger.debug("JWT token generated for userId {}: {}", userId, token);
 
         UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
-        userAndJwtDTO.setUser(userRepository.findById(userId).orElse(null));
+        userAndJwtDTO.setUser(convertToUserDTO(userRepository.findById(userId).orElse(null)));
         userAndJwtDTO.setToken(token);
 
         return userAndJwtDTO;

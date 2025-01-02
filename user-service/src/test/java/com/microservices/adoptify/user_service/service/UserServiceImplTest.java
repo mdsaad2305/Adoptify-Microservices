@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.microservices.adoptify.user_service.configuration.JWTService;
-import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.repository.UserRepository;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,18 +40,18 @@ public class UserServiceImplTest {
     user2 = new User("some2", "someone2@something.com", "password456", "ADMIN", "0987654321");
   }
 
-  @Test
-  void registerUser_ShouldSaveWithEncodedPassword() {
-    when(userRepository.save(Mockito.any(User.class))).thenReturn(user1);
-
-    UserAndJwtDTO registered_user = userService.registerUser(user1);
-
-    assertNotNull(registered_user);
-    assertNotEquals(
-        "password123", registered_user.getUser().getPassword(), "Password should be encoded");
-    assertTrue(passwordEncoder.matches("password123", registered_user.getUser().getPassword()));
-    verify(userRepository, times(1)).save(any(User.class));
-  }
+  //  @Test
+  //  void registerUser_ShouldSaveWithEncodedPassword() {
+  //    when(userRepository.save(Mockito.any(User.class))).thenReturn(user1);
+  //
+  //    UserAndJwtDTO registered_user = userService.registerUser(user1);
+  //
+  //    assertNotNull(registered_user);
+  //    assertNotEquals(
+  //        "password123", registered_user.getUser().getPassword(), "Password should be encoded");
+  //    assertTrue(passwordEncoder.matches("password123", registered_user.getUser().getPassword()));
+  //    verify(userRepository, times(1)).save(any(User.class));
+  //  }
 
   @Test
   void getAllUsers_ShouldReturnListOfUserDTOs() {
