@@ -11,14 +11,14 @@ import com.microservices.adoptify.user_service.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -65,7 +65,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserAndJwtDTO verify(User user) {
     try {
-      Authentication authentication = authenticationManager.authenticate(
+      Authentication authentication =
+          authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
       if (authentication.isAuthenticated()) {

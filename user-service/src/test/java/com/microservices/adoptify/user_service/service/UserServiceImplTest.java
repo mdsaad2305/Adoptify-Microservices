@@ -49,7 +49,8 @@ public class UserServiceImplTest {
     UserAndJwtDTO registered_user = userService.registerUser(user1);
 
     assertNotNull(registered_user);
-    assertNotEquals("password123", registered_user.getUser().getPassword(), "Password should be encoded");
+    assertNotEquals(
+        "password123", registered_user.getUser().getPassword(), "Password should be encoded");
     assertTrue(passwordEncoder.matches("password123", registered_user.getUser().getPassword()));
     verify(userRepository, times(1)).save(any(User.class));
   }
