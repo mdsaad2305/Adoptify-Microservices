@@ -2,6 +2,8 @@ package com.microservices.adoptify.user_service.controller;
 
 import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
+import com.microservices.adoptify.user_service.dto.UserMessageDTO;
+import com.microservices.adoptify.user_service.messaging.UserEmailProducer;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.service.UserService;
 import java.util.List;
@@ -15,9 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserController {
 
   private final UserService userService;
+  private final UserEmailProducer userEmailProducer;
 
-  public UserController(UserService userService) {
+  public UserController(UserService userService, UserEmailProducer userEmailProducer) {
     this.userService = userService;
+    this.userEmailProducer = userEmailProducer;
   }
 
   @GetMapping
@@ -39,6 +43,7 @@ public class UserController {
   public ResponseEntity<UserAndJwtDTO> registerUser(@RequestBody User user) {
 
     UserAndJwtDTO userAndJwtDTO = userService.registerUser(user);
+    userEmailProducer.sendMessage(user);
     return new ResponseEntity<>(userAndJwtDTO, HttpStatus.CREATED);
   }
 
