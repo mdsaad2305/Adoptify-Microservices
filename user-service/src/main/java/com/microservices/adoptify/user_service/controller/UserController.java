@@ -1,5 +1,6 @@
 package com.microservices.adoptify.user_service.controller;
 
+import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.service.UserService;
@@ -35,14 +36,14 @@ public class UserController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<User> registerUser(@RequestBody User user) {
-    User newUser = userService.registerUser(user);
-    return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+  public ResponseEntity<UserAndJwtDTO> registerUser(@RequestBody User user) {
+    UserAndJwtDTO userAndJwtDTO = userService.registerUser(user);
+    return new ResponseEntity<>(userAndJwtDTO, HttpStatus.CREATED);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<String> loginUser(@RequestBody User user) {
-    return new ResponseEntity<>(userService.Verify(user), HttpStatus.OK);
+  public ResponseEntity<UserAndJwtDTO> loginUser(@RequestBody User user) {
+    return new ResponseEntity<>(userService.verify(user), HttpStatus.OK);
   }
 
   //    @PostMapping

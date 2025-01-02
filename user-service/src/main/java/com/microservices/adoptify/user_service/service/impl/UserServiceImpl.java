@@ -1,6 +1,8 @@
 package com.microservices.adoptify.user_service.service.impl;
 
 import com.microservices.adoptify.user_service.configuration.JWTService;
+import com.microservices.adoptify.user_service.configuration.UserDetailsImpl;
+import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.mapper.UserMapper;
 import com.microservices.adoptify.user_service.model.User;
@@ -9,15 +11,19 @@ import com.microservices.adoptify.user_service.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+  private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
   private final UserRepository userRepository;
   private final AuthenticationManager authenticationManager;
   private final JWTService jwtService;
@@ -33,21 +39,56 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User registerUser(User user) {
+  public UserAndJwtDTO registerUser(User user) {
+    // Check for duplicate username
+    if (userRepository.existsByUsername(user.getUsername())) {
+      logger.warn("Attempted to register with duplicate username: {}", user.getUsername());
+      throw new RuntimeException("Username already exists");
+    }
+
     user.setPassword(encoder.encode(user.getPassword()));
-    return userRepository.save(user);
+    logger.info("Password encoded for user: {}", user.getUsername());
+
+    User savedUser = userRepository.save(user);
+    logger.info("User registered successfully with userId: {}", savedUser.getUserId());
+
+    String token = jwtService.generateToken(savedUser.getUserId());
+    logger.debug("JWT token generated for userId {}: {}", savedUser.getUserId(), token);
+
+    UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
+    userAndJwtDTO.setUser(savedUser);
+    userAndJwtDTO.setToken(token);
+
+    return userAndJwtDTO;
   }
 
   @Override
-  public String Verify(User user) {
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+  public UserAndJwtDTO verify(User user) {
+    try {
+      Authentication authentication =
+          authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
-    if (authentication.isAuthenticated()) {
-      return jwtService.generateToken(user.getUsername());
-    } else {
-      return "Invalid username or password";
+      if (authentication.isAuthenticated()) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getUserId();
+        logger.info("User authenticated successfully with userId: {}", userId);
+
+        String token = jwtService.generateToken(userId);
+        logger.debug("JWT token generated for userId {}: {}", userId, token);
+
+        UserAndJwtDTO userAndJwtDTO = new UserAndJwtDTO();
+        userAndJwtDTO.setUser(userRepository.findById(userId).orElse(null));
+        userAndJwtDTO.setToken(token);
+
+        return userAndJwtDTO;
+      } else {
+        logger.warn("Authentication failed for username: {}", user.getUsername());
+        throw new AuthenticationException("Invalid username or password") {};
+      }
+    } catch (AuthenticationException e) {
+      logger.error("AuthenticationException for user: {}", user.getUsername(), e);
+      throw new AuthenticationException("Invalid username or password") {};
     }
   }
 

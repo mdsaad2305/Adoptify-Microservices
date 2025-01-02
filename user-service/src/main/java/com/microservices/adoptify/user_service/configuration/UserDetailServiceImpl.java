@@ -24,7 +24,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     return UserDetailsImpl.build(user);
   }
 
-  // Optional: Load user by ID
+  // Load user by ID
   public UserDetailsImpl loadUserById(Long userId) throws UsernameNotFoundException {
     User user =
         userRepository

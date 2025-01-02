@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.microservices.adoptify.user_service.configuration.JWTService;
+import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.repository.UserRepository;
@@ -45,11 +46,12 @@ public class UserServiceImplTest {
   void registerUser_ShouldSaveWithEncodedPassword() {
     when(userRepository.save(Mockito.any(User.class))).thenReturn(user1);
 
-    User registered_user = userService.registerUser(user1);
+    UserAndJwtDTO registered_user = userService.registerUser(user1);
 
     assertNotNull(registered_user);
-    assertNotEquals("password123", registered_user.getPassword(), "Password should be encoded");
-    assertTrue(passwordEncoder.matches("password123", registered_user.getPassword()));
+    assertNotEquals(
+        "password123", registered_user.getUser().getPassword(), "Password should be encoded");
+    assertTrue(passwordEncoder.matches("password123", registered_user.getUser().getPassword()));
     verify(userRepository, times(1)).save(any(User.class));
   }
 
