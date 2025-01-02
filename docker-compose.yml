@@ -11,6 +11,22 @@ services:
       - app-network
     restart: unless-stopped
 
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    image: gateway:latest
+    container_name: gateway
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+    depends_on:
+      - service-registry
+    networks:
+      - app-network
+    restart: unless-stopped
+
   user-service:
     build:
       context: ./user-service
@@ -21,12 +37,13 @@ services:
       - "8081:8081"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
-      # - SPRING_PROFILES_ACTIVE=prod
     depends_on:
       - service-registry
+      - gateway
     networks:
       - app-network
     restart: unless-stopped
+
 
 networks:
   app-network:
