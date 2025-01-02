@@ -1,6 +1,7 @@
 package com.microservices.adoptify.user_service.configuration;
 
 import com.microservices.adoptify.user_service.configuration.filter.JwtFilter;
+import com.microservices.adoptify.user_service.corseConfig.CORSConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,10 +21,15 @@ public class SecurityConfig {
 
   private final UserDetailServiceImpl userDetailsService;
   private final JwtFilter jwtFilter;
+  private CORSConfiguration corsConfiguration;
 
-  public SecurityConfig(UserDetailServiceImpl userDetailsService, JwtFilter jwtFilter) {
+  public SecurityConfig(
+      UserDetailServiceImpl userDetailsService,
+      JwtFilter jwtFilter,
+      CORSConfiguration corsConfiguration) {
     this.userDetailsService = userDetailsService;
     this.jwtFilter = jwtFilter;
+    this.corsConfiguration = corsConfiguration;
   }
 
   @Bean
@@ -39,6 +45,7 @@ public class SecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .cors(c -> c.configurationSource(corsConfiguration))
         .build();
   }
 
