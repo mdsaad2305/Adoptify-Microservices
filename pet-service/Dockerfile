@@ -8,7 +8,7 @@ ARG JAR_FILE=target/pet-service-0.0.1-SNAPSHOT.jar
 COPY ${JAR_FILE} app.jar
 
 # Expose the port your Spring Boot app listens on (default is 8080)
-EXPOSE 8080
+EXPOSE 8082
 
 # Run the JAR file
 ENTRYPOINT ["java", "-jar", "/app.jar"]
