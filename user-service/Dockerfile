@@ -24,7 +24,7 @@ ARG JAR_FILE=/app/target/user-service-0.0.1-SNAPSHOT.jar
 COPY --from=builder ${JAR_FILE} app.jar
 
 # Expose the port your Spring Boot app listens on (default is 8080)
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the JAR file
 ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -27,6 +27,15 @@ services:
       - app-network
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
   user-service:
     build:
       context: ./user-service
@@ -40,6 +49,27 @@ services:
     depends_on:
       - service-registry
       - gateway
+      - rabbitmq
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    image: notification-service:latest
+    container_name: notification-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - SMTP_USERNAME=ad0ptify.server@gmail.com
+      - SMTP_PASSWORD=colkpufxychwikpu
+    depends_on:
+      - service-registry
+      - gateway
+      - rabbitmq
     networks:
       - app-network
     restart: unless-stopped
