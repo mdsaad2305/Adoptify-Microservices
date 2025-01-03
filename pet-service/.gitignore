@@ -34,3 +34,4 @@ build/
 
 ## Custom ##
 .env
+src/main/java/com/microservices/adoptify/pet_service/GenerateKey.java

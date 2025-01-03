@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PetService {
     // Create or update a pet
-    Pet addPet(Pet pet);
+    Pet addPet(Pet pet, String token);
 
     // Get all pets
     List<PetAndUserDTO> getAllPets(String token);
@@ -17,6 +17,6 @@ public interface PetService {
     PetAndUserDTO getPetById(Long id, String token);
 
     // Delete a pet by ID
-    void deletePet(Long id);
-    boolean updatePet(long id, Pet pet);
+    boolean deletePet(Long id, String token);
+    boolean updatePet(long id, Pet pet, String token);
 }

@@ -1,5 +1,6 @@
 package com.microservices.adoptify.pet_service.controller;
 
+import com.microservices.adoptify.pet_service.configuration.JWTService;
 import com.microservices.adoptify.pet_service.dto.PetAndUserDTO;
 import com.microservices.adoptify.pet_service.model.Pet;
 import com.microservices.adoptify.pet_service.service.PetService;
@@ -15,15 +16,20 @@ import java.util.Optional;
 public class PetController {
 
     private final PetService petService;
+    private final JWTService jwtService;
 
-    public PetController(PetService petService) {
+    public PetController(PetService petService, JWTService jwtService) {
         this.petService = petService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping
     public ResponseEntity<List<PetAndUserDTO>> getPets(@RequestHeader("Authorization") String token) {
         System.out.println(token);
         List<PetAndUserDTO> pets = petService.getAllPets(token);
+        String trimmedToken = token.substring(7).trim();
+        String userId = jwtService.extractUserId(trimmedToken);
+        System.out.println(userId);
         return new ResponseEntity<>(pets, HttpStatus.OK);
     }
 
@@ -33,8 +39,8 @@ public class PetController {
     }
 
     @PostMapping
-    public ResponseEntity<Pet> createPet(@RequestBody Pet pet) {
-        return new ResponseEntity<>(petService.addPet(pet), HttpStatus.CREATED);
+    public ResponseEntity<Pet> createPet(@RequestBody Pet pet, @RequestHeader("Authorization") String token) {
+        return new ResponseEntity<>(petService.addPet(pet, token), HttpStatus.CREATED);
     }
 
 }
