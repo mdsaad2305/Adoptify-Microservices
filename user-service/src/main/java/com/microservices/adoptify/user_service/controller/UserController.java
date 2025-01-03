@@ -2,7 +2,6 @@ package com.microservices.adoptify.user_service.controller;
 
 import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
-import com.microservices.adoptify.user_service.dto.UserMessageDTO;
 import com.microservices.adoptify.user_service.messaging.UserEmailProducer;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.service.UserService;

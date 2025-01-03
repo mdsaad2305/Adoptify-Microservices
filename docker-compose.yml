@@ -64,6 +64,8 @@ services:
       - "8085:8085"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+      - SMTP_USERNAME=ad0ptify.server@gmail.com
+      - SMTP_PASSWORD=colkpufxychwikpu
     depends_on:
       - service-registry
       - gateway
