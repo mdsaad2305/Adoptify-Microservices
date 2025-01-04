@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
   }
 
   private UserDTO convertToUserDTO(User user) {
-    if(user == null){
+    if (user == null) {
       return null;
     }
     return UserMapper.toDTO(user);

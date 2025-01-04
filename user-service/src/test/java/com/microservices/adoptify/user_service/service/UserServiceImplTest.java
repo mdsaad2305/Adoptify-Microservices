@@ -7,14 +7,12 @@ import com.microservices.adoptify.user_service.configuration.JWTService;
 import com.microservices.adoptify.user_service.configuration.UserDetailsImpl;
 import com.microservices.adoptify.user_service.dto.UserAndJwtDTO;
 import com.microservices.adoptify.user_service.dto.UserDTO;
-import com.microservices.adoptify.user_service.mapper.UserMapper;
 import com.microservices.adoptify.user_service.model.User;
 import com.microservices.adoptify.user_service.repository.UserRepository;
 import com.microservices.adoptify.user_service.service.impl.UserServiceImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +22,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserServiceImplTest {
@@ -49,7 +46,6 @@ public class UserServiceImplTest {
     user2 = new User("some2", "someone2@something.com", "password456", "ADMIN", "0987654321");
   }
 
-
   @Test
   void getAllUsers_ShouldReturnListOfUserDTOs() {
     when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
@@ -65,7 +61,8 @@ public class UserServiceImplTest {
   @Test
   void registerUser_ShouldRegisterSuccessfully() {
     User newUser = new User("newUser", "newUser@somemock.com", "password123", "USER", "1234567890");
-    User savedUser = new User("newUser", "newUser@somemock.com", "password123", "USER", "1234567890");
+    User savedUser =
+        new User("newUser", "newUser@somemock.com", "password123", "USER", "1234567890");
 
     savedUser.setUserId(3L);
 
@@ -81,20 +78,21 @@ public class UserServiceImplTest {
     verify(userRepository, times(1)).existsByUsername("newUser");
     verify(userRepository, times(1)).save(any(User.class));
     verify(jwtService, times(1)).generateToken(3L);
-
   }
 
   @Test
   void registerUser_ShouldThrowExceptionWhenUserAlreadyExists() {
-    User user = new User("duplicateUser", "duplicateUser@something.com", "password123", "USER", "1234567890");
+    User user =
+        new User(
+            "duplicateUser", "duplicateUser@something.com", "password123", "USER", "1234567890");
 
     when(userRepository.existsByUsername("duplicateUser")).thenReturn(true);
 
-    RuntimeException exception = assertThrows(
+    RuntimeException exception =
+        assertThrows(
             RuntimeException.class,
             () -> userService.registerUser(user),
-            "Should throw RuntimeException"
-    );
+            "Should throw RuntimeException");
 
     assertEquals("Username already exists", exception.getMessage());
     verify(userRepository, times(1)).existsByUsername("duplicateUser");
@@ -104,7 +102,8 @@ public class UserServiceImplTest {
 
   @Test
   void verify_shouldAuthenticateSuccessfully() {
-    User credentials = new User("validUser", "valid@example.com", "validPassword", "USER", "7777777777");
+    User credentials =
+        new User("validUser", "valid@example.com", "validPassword", "USER", "7777777777");
 
     Authentication auth = mock(Authentication.class);
     UserDetailsImpl userDetails = mock(UserDetailsImpl.class);
@@ -119,30 +118,33 @@ public class UserServiceImplTest {
     UserAndJwtDTO userAndJwtDTO = userService.verify(credentials);
 
     assertNotNull(userAndJwtDTO, "User should not be null");
-    assertEquals("validUser", userAndJwtDTO.getUser().getUsername(), "Username should be 'validUser'");
+    assertEquals(
+        "validUser", userAndJwtDTO.getUser().getUsername(), "Username should be 'validUser'");
     assertEquals("jwt-token", userAndJwtDTO.getToken(), "Token should be 'jwt-token'");
     verify(authenticationManager, times(1)).authenticate(any(Authentication.class));
     verify(auth, times(1)).isAuthenticated();
     verify(userRepository, times(1)).findById(1L);
     verify(jwtService, times(1)).generateToken(1L);
-
   }
 
   @Test
   void verify_shouldThrowExceptionForInvalidCredentials() {
-    User invalidCredentials = new User("invalidUser", "invalid@example.com", "wrongPassword", "USER", "8888888888");
+    User invalidCredentials =
+        new User("invalidUser", "invalid@example.com", "wrongPassword", "USER", "8888888888");
 
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-            .thenThrow(new AuthenticationException("Invalid credentials") {});
+        .thenThrow(new AuthenticationException("Invalid credentials") {});
 
-    AuthenticationException exception = assertThrows(
+    AuthenticationException exception =
+        assertThrows(
             AuthenticationException.class,
             () -> userService.verify(invalidCredentials),
-            "Should throw AuthenticationException"
-    );
+            "Should throw AuthenticationException");
 
-    assertEquals("Invalid username or password", exception.getMessage(), "exception message does not match");
-    verify(authenticationManager, times(1)).authenticate(any(UsernamePasswordAuthenticationToken.class));
+    assertEquals(
+        "Invalid username or password", exception.getMessage(), "exception message does not match");
+    verify(authenticationManager, times(1))
+        .authenticate(any(UsernamePasswordAuthenticationToken.class));
     verify(jwtService, never()).generateToken(anyLong());
     verify(userRepository, never()).findById(anyLong());
   }

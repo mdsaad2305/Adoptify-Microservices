@@ -77,4 +77,19 @@ public class UserController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
     }
   }
+
+  //  @ExceptionHandler(ResponseStatusException.class)
+  //  public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
+  //    return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+  //  }
+  //
+  //  @ExceptionHandler(RuntimeException.class)
+  //  public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+  //    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+  //  }
+  //
+  //  @ExceptionHandler(AuthenticationException.class)
+  //  public ResponseEntity<String> handleAuthenticationException(AuthenticationException ex) {
+  //    return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+  //  }
 }

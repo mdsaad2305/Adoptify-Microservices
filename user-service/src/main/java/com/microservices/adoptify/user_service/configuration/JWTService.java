@@ -28,14 +28,14 @@ public class JWTService {
     Map<String, Object> claims = new HashMap<>();
 
     return Jwts.builder()
-            .claims()
-            .add(claims)
-            .subject(userId.toString())
-            .issuedAt(new Date(System.currentTimeMillis()))
-            .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 60 * 30))
-            .and()
-            .signWith(key)
-            .compact();
+        .claims()
+        .add(claims)
+        .subject(userId.toString())
+        .issuedAt(new Date(System.currentTimeMillis()))
+        .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 60 * 30))
+        .and()
+        .signWith(key)
+        .compact();
   }
 
   public String extractUserId(String jwtToken) {
