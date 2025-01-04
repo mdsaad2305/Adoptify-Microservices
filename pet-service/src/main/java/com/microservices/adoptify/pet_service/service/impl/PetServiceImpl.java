@@ -2,13 +2,13 @@ package com.microservices.adoptify.pet_service.service.impl;
 
 
 import com.microservices.adoptify.pet_service.clients.UserClient;
+import com.microservices.adoptify.pet_service.configuration.JWTService;
 import com.microservices.adoptify.pet_service.dto.PetAndUserDTO;
 import com.microservices.adoptify.pet_service.external.User;
 import com.microservices.adoptify.pet_service.mapper.UserAndPetToDTO;
 import com.microservices.adoptify.pet_service.model.Pet;
 import com.microservices.adoptify.pet_service.repository.PetRepository;
 import com.microservices.adoptify.pet_service.service.PetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,15 +21,26 @@ public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
     private final UserClient userClient;
 
-    public PetServiceImpl(PetRepository petRepository , UserClient userClient) {
+    private final JWTService jwtService;
+
+    public PetServiceImpl(PetRepository petRepository , UserClient userClient, JWTService jwtService) {
         this.petRepository = petRepository;
         this.userClient = userClient;
+        this.jwtService = jwtService;
     }
 
     // Create or update a pet
     @Override
-    public Pet addPet(Pet pet) {
-        return petRepository.save(pet);
+    public Pet addPet(Pet pet, String token) {
+        String trimmedToken = removeBearerFromToken(token);
+        String userIdString = jwtService.extractUserId(trimmedToken);
+        try {
+            Long userId = Long.parseLong(userIdString);
+            pet.setUserId(userId);
+            return petRepository.save(pet);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Get all pets
@@ -64,11 +75,28 @@ public class PetServiceImpl implements PetService {
 
     // Delete a pet by ID
     @Override
-    public void deletePet(Long id) {
-        petRepository.deleteById(id);
+    public boolean deletePet(Long id, String token) {
+        String trimmedToken = removeBearerFromToken(token);
+        String userIdString = jwtService.extractUserId(trimmedToken);
+        try{
+            Long userId = Long.parseLong(userIdString);
+            Pet pet = petRepository.findById(id).orElse(null);
+            if(pet != null) {
+                if(pet.getUserId().equals(userId)) {
+                    petRepository.delete(pet);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public boolean updatePet(long id, Pet updatePet){
+    public boolean updatePet(long id, Pet updatePet, String token){
         Optional<Pet> optionalPet = petRepository.findById(id);
         if(optionalPet.isPresent()){
             Pet pet = optionalPet.get();
@@ -99,5 +127,9 @@ public class PetServiceImpl implements PetService {
             return  true;
         }
         return  false;
+    }
+
+    private String removeBearerFromToken(String token) {
+        return token.substring(7).trim();
     }
 }

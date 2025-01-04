@@ -74,6 +74,24 @@ services:
       - app-network
     restart: unless-stopped
 
+  pet-service:
+    build:
+      context: ./pet-service
+      dockerfile: Dockerfile
+    image: pet-service:latest
+    container_name: pet-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+    depends_on:
+      - service-registry
+      - gateway
+      - rabbitmq
+    networks:
+      - app-network
+    restart: unless-stopped
+
 
 networks:
   app-network:
