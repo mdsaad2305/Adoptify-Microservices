@@ -106,7 +106,7 @@ public class PetServiceImpl implements PetService {
             Pet pet = optionalPet.get();
             try{
                 Long userId = Long.parseLong(userIdString);
-                if(pet.getUserId() != userId){
+                if(!userId.equals(pet.getUserId())){
                     return  false;
                 }
             }catch (NumberFormatException e){
@@ -136,6 +136,7 @@ public class PetServiceImpl implements PetService {
             if(updatePet.getName() != null) {
                 pet.setName(updatePet.getName());
             }
+            petRepository.save(pet);
             return  true;
         }
         return  false;
