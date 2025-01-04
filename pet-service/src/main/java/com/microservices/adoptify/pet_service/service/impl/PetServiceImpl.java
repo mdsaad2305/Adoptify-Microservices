@@ -98,8 +98,20 @@ public class PetServiceImpl implements PetService {
 
     public boolean updatePet(long id, Pet updatePet, String token){
         Optional<Pet> optionalPet = petRepository.findById(id);
+        String trimmedToken = removeBearerFromToken(token);
+        String userIdString = jwtService.extractUserId(trimmedToken);
+
         if(optionalPet.isPresent()){
+
             Pet pet = optionalPet.get();
+            try{
+                Long userId = Long.parseLong(userIdString);
+                if(pet.getUserId() != userId){
+                    return  false;
+                }
+            }catch (NumberFormatException e){
+                throw new RuntimeException(e);
+            }
             if(updatePet.getName() != null){
                 pet.setName(updatePet.getName());
             }
