@@ -133,6 +133,7 @@ public class UserServiceImpl implements UserService {
       if (updatedUser.getPhoneNumber() != null) {
         user.setPhoneNumber(updatedUser.getPhoneNumber());
       }
+      userRepository.save(user);
       return true;
     }
     return false;
@@ -150,6 +151,9 @@ public class UserServiceImpl implements UserService {
   }
 
   private UserDTO convertToUserDTO(User user) {
+    if(user == null){
+      return null;
+    }
     return UserMapper.toDTO(user);
   }
 }
