@@ -9,6 +9,7 @@
 - **Secure and Efficient System** ensures responsible pet adoption.
 - **Mission-Driven** to promote loving and suitable homes for every animal.
 
+---
 This repository contains a multi-service microservices application built with Spring Boot. The application comprises four main services:
 
 1. **user-service**  
