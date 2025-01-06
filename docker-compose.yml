@@ -6,7 +6,7 @@ services:
     image: service-registry:latest
     container_name: service-registry
     ports:
-      - "8761:8761"
+      - '8761:8761'
     networks:
       - app-network
     restart: unless-stopped
@@ -18,21 +18,21 @@ services:
     image: gateway:latest
     container_name: gateway
     ports:
-      - "8084:8084"
+      - '8084:8084'
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
     depends_on:
       - service-registry
     networks:
       - app-network
-    restart: unless-stopped
+    restart: no
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     networks:
       - app-network
 
@@ -43,7 +43,7 @@ services:
     image: user-service:latest
     container_name: user-service
     ports:
-      - "8081:8081"
+      - '8081:8081'
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
     depends_on:
@@ -52,7 +52,7 @@ services:
       - rabbitmq
     networks:
       - app-network
-    restart: unless-stopped
+    restart: no
 
   notification-service:
     build:
@@ -61,18 +61,18 @@ services:
     image: notification-service:latest
     container_name: notification-service
     ports:
-      - "8085:8085"
+      - '8085:8085'
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
-      - SMTP_USERNAME=ad0ptify.server@gmail.com
-      - SMTP_PASSWORD=colkpufxychwikpu
+      - SMTP_USERNAME=${SMTP_EMAIL}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     depends_on:
       - service-registry
       - gateway
       - rabbitmq
     networks:
       - app-network
-    restart: unless-stopped
+    restart: no
 
   pet-service:
     build:
@@ -81,7 +81,7 @@ services:
     image: pet-service:latest
     container_name: pet-service
     ports:
-      - "8082:8082"
+      - '8082:8082'
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
     depends_on:
@@ -90,8 +90,25 @@ services:
       - rabbitmq
     networks:
       - app-network
-    restart: unless-stopped
+    restart: no
 
+  adoption-service:
+    build:
+      context: ./adoption-service
+      dockerfile: Dockerfile
+    image: adoption-service:latest
+    container_name: adoption-service
+    ports:
+      - '8083:8083'
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+    depends_on:
+      - service-registry
+      - gateway
+      - rabbitmq
+    networks:
+      - app-network
+    restart: no
 
 networks:
   app-network:
