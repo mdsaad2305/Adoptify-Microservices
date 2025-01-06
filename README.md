@@ -11,6 +11,10 @@ Additionally, it includes:
 - A **service-registry** (Eureka) for service discovery.  
 - A **gateway** (Spring Cloud Gateway) to handle routing and entry points into the system.
 
+## Architecture Diagram
+![Architecture Diagram](https://github.com/user-attachments/assets/dbe6708e-99ba-480b-86a2-02b5c4abf002)
+
+
 The application demonstrates a range of microservice communication patterns, security, observability, fault tolerance, and deployment using Docker.
 
 ---
