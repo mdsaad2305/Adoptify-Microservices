@@ -64,8 +64,8 @@ services:
       - "8085:8085"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
-      - SMTP_USERNAME=ad0ptify.server@gmail.com
-      - SMTP_PASSWORD=colkpufxychwikpu
+      - SMTP_USERNAME=${SMTP_EMAIL}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
     depends_on:
       - service-registry
       - gateway
@@ -91,6 +91,24 @@ services:
     networks:
       - app-network
     restart: unless-stopped
+
+  adoption-service:
+    build:
+      context: ./adoption-service
+      dockerfile: Dockerfile
+    image: adoption-service:latest
+    container_name: adoption-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://service-registry:8761/eureka/
+    depends_on:
+      - service-registry
+      - gateway
+      - rabbitmq
+    networks:
+      - app-network
+    restart: no
 
 
 networks:
