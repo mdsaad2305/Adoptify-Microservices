@@ -1,5 +1,14 @@
 # Adoptify API
-### (In-Progress)
+
+**Adoptify** is a comprehensive animal adoption platform designed to bridge the gap between pet owners and potential adopters.
+
+- **Pet Owners** can effortlessly list their beloved animals for adoption.
+- **Adopters** can explore a diverse range of available pets.
+- **Direct Communication** allows adopters to contact owners seamlessly.
+- **User-Friendly Interface** showcases each pet's unique characteristics and needs.
+- **Secure and Efficient System** ensures responsible pet adoption.
+- **Mission-Driven** to promote loving and suitable homes for every animal.
+
 This repository contains a multi-service microservices application built with Spring Boot. The application comprises four main services:
 
 1. **user-service**  
