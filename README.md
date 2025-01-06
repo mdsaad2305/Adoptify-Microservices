@@ -14,6 +14,8 @@ Additionally, it includes:
 ## Architecture Diagram
 ![Architecture Diagram](https://github.com/user-attachments/assets/dbe6708e-99ba-480b-86a2-02b5c4abf002)
 
+## [Website](https://github.com/navdiya-nikunj/Adoptify-client)
+![adoptify-Frontend](https://github.com/user-attachments/assets/58750441-2ced-4daf-b4d8-e45046aeb6a3)
 
 The application demonstrates a range of microservice communication patterns, security, observability, fault tolerance, and deployment using Docker.
 
